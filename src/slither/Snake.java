@@ -5,6 +5,7 @@
  */
 package slither;
 
+import audio.AudioPlayer;
 import environment.LocationValidatorIntf;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -19,6 +20,7 @@ public class Snake {
 
     private ArrayList<Point> body = new ArrayList<>();
     private Direction direction = Direction.RIGHT;
+    private Direction noMove = null;
     private GridDrawData drawData;
     private LocationValidatorIntf locationValidator;
     private boolean paused;
@@ -31,10 +33,11 @@ public class Snake {
 //    die
 //    draw
     private Color SNAKE_BODY_COLOR = new Color(51, 102, 0);
-    private Color SNAKE_WHITE = Color.WHITE;
+    private Color SNAKE_WHITE = Color.LIGHT_GRAY;
     private int MAX_OPACITY = 255;
-    private int MIN_OPACITY = 80;
-
+    private int MIN_OPACITY = 100;
+    public boolean selfHit;
+    
     public void draw(Graphics graphics) {
         int opacity = getMAX_OPACITY();
         double opacityStepSize = (getMAX_OPACITY() - getMIN_OPACITY()) / getBody().size();
@@ -109,12 +112,19 @@ public class Snake {
 
             if (getDirection() == Direction.RIGHT) {
                 newHead.x++;
+                setNoMove(Direction.LEFT);
+                
             } else if (getDirection() == Direction.LEFT) {
                 newHead.x--;
+                setNoMove(Direction.RIGHT);
+                
             } else if (getDirection() == Direction.UP) {
                 newHead.y--;
+                setNoMove(Direction.DOWN);
+                
             } else if (getDirection() == Direction.DOWN) {
                 newHead.y++;
+                setNoMove(Direction.UP);
             }
 
             if (locationValidator != null) {
@@ -275,6 +285,29 @@ public class Snake {
      */
     public void setAlive(boolean alive) {
         this.alive = alive;
+    }
+    
+    public boolean selfHit(){
+        for (int i = 1; i < body.size(); i++) {
+            if (getHead().equals(body.get(i))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @return the noMove
+     */
+    public Direction getNoMove() {
+        return noMove;
+    }
+
+    /**
+     * @param noMove the noMove to set
+     */
+    public void setNoMove(Direction noMove) {
+        this.noMove = noMove;
     }
     
 }
